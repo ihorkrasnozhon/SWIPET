@@ -2,7 +2,7 @@
 
 An interactive pet-finding web application inspired by Tinder's core mechanics. This project is built with React and focuses on advanced animations, smooth UX, and clean API handling.
 
-#Tech Stack
+# Tech Stack
 Frontend: React 18, Vite.
 
 Animations: Framer Motion (useMotionValue, useTransform, AnimatePresence).
