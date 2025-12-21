@@ -8,9 +8,15 @@ const CardStack = () => {
     const [pets, setPets] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+
     const x = useMotionValue(0);
-    const opacitySad = useTransform(x, [-150, -50], [1,0]);
-    const opacityHappy = useTransform(x, [50, 150], [0,1]);
+    const opacitySad = useTransform(x, [-150, -50, 0], [1,0,0]);
+    const opacityHappy = useTransform(x, [0,50, 150], [0,0,1]);
+
+    const opacityLoading = useMotionValue(0);
+
+
     console.log(currentIndex);
 
 
@@ -36,11 +42,21 @@ const CardStack = () => {
 
     }, []);
 
-    if(loading) return <div>Loading...</div>;
+    if(loading) return (
+        <div className="card-stack-container">
+            <div className="card-placeholder">
+                <motion.img src="/loadingcat.png"
+                            style={{ width: "320px", height: "480px"}}
+                            className="reaction-emoji"
+                />
+            </div>
+        </div>);
     if(pets.length===0) return  <div>No more pets...</div>;
 
     const handleSwipe = (direction) => {
         if(!direction) return;
+        setIsTransitioning(true);
+        opacityLoading.set(1);
 
         const swipedPet = pets[currentIndex];
 
@@ -48,7 +64,14 @@ const CardStack = () => {
             console.log(`You swiped ${direction} on ${pets[currentIndex].name}`);
         }
 
-        setCurrentIndex((prev) => prev+1);
+        setTimeout(() => {
+            setCurrentIndex((prev) => prev+1);
+            setIsTransitioning(false);
+            setTimeout(()=>{
+                opacityLoading.set(0);
+            },400);
+        }, 600);
+
     }
 
     if (currentIndex >= pets.length) {
@@ -61,9 +84,7 @@ const CardStack = () => {
     }
 
     return (
-        <div className="card-stack-container"
-            // style={{position: 'relative', width: '320px', height: '480px'}}
-        >
+        <div className="card-stack-container">
             <div className="card-placeholder">
                 <motion.img src="/sadcat.png"
                             style={{opacity: opacitySad}}
@@ -76,13 +97,32 @@ const CardStack = () => {
                             className="reaction-emoji"
                 />
             </div>
-            <AnimatePresence mode="wait">
-                <PetCard
-                    key={pets[currentIndex].id}
-                    dragX={x}
-                    {...pets[currentIndex]}
-                    onSwipe={handleSwipe}
+            <div className="card-placeholder">
+                <motion.img src="/loadingcat.png"
+                            style={{opacity: opacityLoading}}
+                            className="reaction-emoji"
                 />
+            </div>
+
+            <AnimatePresence mode="wait">
+                {isTransitioning ? (
+                    <motion.div
+                        key="transition-loader"
+                        initial={{opacity: 0}}
+                        animate={{opacity: 1}}
+                        exit={{opacity: 0}}
+                        className="card-placeholder"
+                    >
+                        <img src="/loadingcat.png"/>
+                    </motion.div>
+                ) : (
+                    <PetCard
+                        key={pets[currentIndex].id}
+                        dragX={x}
+                        {...pets[currentIndex]}
+                        onSwipe={handleSwipe}
+                    />
+                )}
             </AnimatePresence>
 
         </div>
