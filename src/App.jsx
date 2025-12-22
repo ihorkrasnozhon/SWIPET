@@ -1,18 +1,22 @@
-import './App.css'
-import PetCard from "./components/PetCard/PetCard.jsx";
-import CardStack from "./features/Cards/CardStack.jsx";
-import Navbar from "./components/Navbar/Navbar.jsx";
-
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import SwipesPage from './pages/SwipesPage/Swipes.jsx';
+import "./App.css"
 function App() {
+    return (
+        <Router>
+            <Routes>
+                {/* Страница входа */}
+                {/*<Route path="/login" element={<AuthPage />} />*/}
 
-  return (
-    <div className="app-layout">
-        <Navbar/>
-        <main className="main-content">
-            <CardStack/>
-        </main>
-    </div>
-  );
+                {/* Страница со свайпами */}
+                <Route path="/swipes" element={<SwipesPage />} />
+
+                {/* Редирект: если зашли на главную, кидаем на логин */}
+                {/*<Route path="/" element={<Navigate to="/login" />} />*/}
+            </Routes>
+        </Router>
+    );
 }
 
-export default App
+export default App;

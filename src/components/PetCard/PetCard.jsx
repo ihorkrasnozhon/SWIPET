@@ -26,7 +26,7 @@ const PetCard = ({name, age, bio, image, onSwipe, dragX}) => {
             drag = "x"
             dragConstraints={{left: 0, right: 0}}
             onDragEnd={handleDragEnd}
-            whileDrag={{scale:1.1}}
+            whileDrag={{scale:1.05}}
             whileTap={{scale: 1.05}}
             initial={{x:0,rotate: 0, scale: 0.5, opacity:0}}
             animate={{scale:1, opacity:1}}
