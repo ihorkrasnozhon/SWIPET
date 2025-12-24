@@ -6,10 +6,32 @@ const RegisterPage = () => {
     const [formData, setFormData] = useState({fullName:'', email:'', password:''});
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        //TODO add registration logic
-        navigate('/login');
+        try {
+            const responce = await fetch('http://localhost:3001/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                fullName: formData.fullName,
+                email: formData.email,
+                password: formData.password
+            }),
+            });
+            const data = await responce.json();
+
+            if (responce.ok) {
+                alert("Your account succesfully created! \n Log in please.");
+                navigate('/login');
+            }
+            else {
+                alert(data.message || "Registration error, try again later.")
+            }
+        } catch (error) {
+            console.error("Server error", error);
+        }
     }
 
     return (
@@ -25,7 +47,7 @@ const RegisterPage = () => {
                             name="fullname"
                             type="text"
                             className="auth-card__input"
-                            onChange={(e) => setFormData({...formData, fullname: e.target.value})}
+                            onChange={(e) => setFormData({...formData, fullName: e.target.value})}
                             required={true}
                         />
                     </div>
@@ -55,7 +77,7 @@ const RegisterPage = () => {
                 </form>
                 <p className="auth-card__footer">
                     Already registered?
-                    <p></p>
+                    <li></li>
                     <Link to="/login" className="auth-card__link">Log in</Link>
                 </p>
             </div>

@@ -40,7 +40,7 @@ const LoginPage = () => {
                 </form>
                 <p className="auth-card__footer">
                     Not registered yet?
-                    <p></p>
+                    <li></li>
                     <Link to="/register"
                           className="auth-card__link">
                          Create account
