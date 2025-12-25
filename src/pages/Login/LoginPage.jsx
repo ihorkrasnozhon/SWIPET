@@ -2,13 +2,41 @@ import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import "./AuthPages.css";
 
-const LoginPage = () => {
+const LoginPage = ({ setUser }) => {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleChange = (e) => {
+        setFormData({...formData, [e.target.name]: e.target.value});
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        navigate('/swipes');
+
+        try {
+            const responce = await fetch('http://localhost:3001/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json'},
+                credentials: 'include',
+                body: JSON.stringify(formData)
+            });
+
+            const data = await responce.json();
+
+            if (responce.ok) {
+
+                if(typeof setUser === 'function') {
+                    setUser(data.user);
+                    navigate('/swipes');
+                }
+
+            } else {
+                alert(data.message || "Login error");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Internal server error")
+        }
     };
 
     return (
@@ -22,7 +50,7 @@ const LoginPage = () => {
                             name="email"
                             type="email"
                             className="auth-card__input"
-                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                            onChange={handleChange}
                             required={true}
                         />
                     </div>
@@ -32,7 +60,7 @@ const LoginPage = () => {
                             name="password"
                             type="password"
                             className="auth-card__input"
-                            onChange={(e) => setFormData({...formData, password: e.target.value})}
+                            onChange={handleChange}
                             required={true}
                         />
                     </div>

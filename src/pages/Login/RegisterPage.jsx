@@ -14,6 +14,7 @@ const RegisterPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                 fullName: formData.fullName,
                 email: formData.email,

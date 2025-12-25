@@ -2,13 +2,31 @@ import express from 'express';
 import sqlite3 from 'sqlite3';
 import cors from 'cors';
 import bcrypt from 'bcrypt';
-
+import session from 'express-session';
+import sqliteStore from 'connect-sqlite3';
 
 const app = express();
 const db = new sqlite3.Database('./swipet.db');
+const SQLiteStore = sqliteStore(session);
 
-app.use(cors());
+
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 app.use(express.json());
+app.use(session({
+    store: new SQLiteStore({db: 'sessions.db', dir: './'}),
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 1000 * 60 * 60,
+        secure: false,
+        httpOnly: true
+    }
+}));
+
 
 db.serialize(() => {
 
@@ -30,12 +48,60 @@ db.serialize(() => {
 
 });
 
+
 app.get('/api/pets', (req, res) => {
     db.all("SELECT * FROM pets", [], (err, rows) => {
         if(err) return res.status(500).json(err);
         res.json(rows);
     });
 });
+
+app.get('/api/islogged', (req, res) => {
+    if (req.session.user) {
+        res.json({
+            loggedIn: true,
+            user: req.session.user
+        });
+    } else {
+        res.json({ loggedIn: false });
+    }
+});
+
+app.post('/api/logout', (req, res) => {
+    req.session.destroy();
+    res.clearCookie('connect.sid');
+    res.json({ message: "Logged out!" });
+});
+
+
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
+
+    db.get("SELECT * FROM users WHERE email = ?", [email], async (err, user) => {
+        if (err) {
+            return res.status(500).json({ message: "Internal database error" });
+        }
+
+        if(!user) {
+            return res.status(400).json({ message: "Invalid email or password" });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password_hash);
+        if(isMatch) {
+            req.session.user = {
+                id: user.id,
+                fullName: user.full_name
+            };
+            res.json({
+                message: "Successfully logged in!",
+                user: req.session.user
+            });
+        } else {
+            res.status(401).json({ message: "Invalid email or password" });
+        }
+    });
+});
+
 
 app.post('/api/register', async (req, res) => {
     const {fullName, email, password} = req.body;
