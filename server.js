@@ -30,21 +30,24 @@ app.use(session({
 
 db.serialize(() => {
 
-    db.run(`CREATE TABLE IF NOT EXISTS pets (
-    id INTEGER PRIMARY KEY,
-    name TEXT,
-    age INTEGER,
-    bio TEXT,
-    image TEXT
-  )`);
-
     db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     full_name VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);`);
+    );`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS pets (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    age INTEGER,
+    bio TEXT,
+    image TEXT,
+    owner_id INTEGER,
+    FOREIGN KEY(owner_id) REFERENCES users(id)
+  )`);
+
 
 });
 
@@ -131,6 +134,24 @@ app.post('/api/register', async (req, res) => {
             message: "Internal server error" + error
         });
     }
+});
+
+app.post('/api/pets', (req, res) => {
+    if(!req.session || !req.session.user) {
+        return res.status(401).json({message: "Unauthorized user"});
+    }
+
+    const {name, age, bio, image} = req.body;
+    const ownerId = req.session.user.id;
+
+    const sql = "INSERT INTO pets (name, age, bio, image, owner_id) VALUES (?, ?, ?, ?, ?)";
+
+    db.run(sql, [name, age, bio, image, ownerId], function(err) {
+        if (err) {
+            return res.status(500).json({message: "Error while saving"});
+        }
+        res.status(201).json({message: "Pet posted succesfully", petId: this.lastID});
+    });
 });
 
 app.listen(3001, () => console.log('Server is running on http://localhost:3001'));

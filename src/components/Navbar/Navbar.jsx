@@ -2,7 +2,7 @@ import React from "react";
 import {motion} from "framer-motion";
 import "./Navbar.css";
 
-const Navbar = ({ setUser, navigate }) => {
+const Navbar = ({ setUser, onAddPet, navigate }) => {
     const handleLogout = async () => {
         try {
             const responce = await fetch('http://localhost:3001/api/logout', {
@@ -30,14 +30,26 @@ const Navbar = ({ setUser, navigate }) => {
                 <img src="/swipet-logo.png" alt="Swipet Logo" className="swipet-logo-img"/>
             </motion.div>
 
-            {/*TODO dont use this button as logout*/}
-            <motion.button
-                className="nav-profile-btn"
-                whileTap={{scale: 0.9}}
-                onClick={handleLogout}
-            >
-                👤(LOGOUT)
-            </motion.button>
+            <div className='nav-actions'>
+                <motion.button
+                    className='nav-add-btn'
+                    whileTap={{scale: 0.95}}
+                    onClick={onAddPet}
+                    title="Add Pet"
+                >
+                    ➕ Post
+                </motion.button>
+
+                {/*TODO dont use this button as logout*/}
+                <motion.button
+                    className="nav-profile-btn"
+                    whileTap={{scale: 0.9}}
+                    onClick={handleLogout}
+                >
+                    👤(LOGOUT)
+                </motion.button>
+            </div>
+
         </nav>
     );
 };
