@@ -4,6 +4,7 @@ import SwipesPage from './pages/SwipesPage/Swipes.jsx';
 import LoginPage from "./pages/Login/LoginPage.jsx";
 import RegisterPage from "./pages/Login/RegisterPage.jsx";
 import "./App.css"
+import ProfilePage from "./pages/ProfilePage/ProfilePage.jsx";
 function App() {
     const [user, setUser] = useState(null);
     const [isChecking, setIsChecking] = useState(true);
@@ -32,6 +33,10 @@ function App() {
                 <Route
                     path="/swipes"
                     element={user ? <SwipesPage setUser={setUser} /> : <Navigate to="/login" replace />}
+                />
+                <Route
+                    path="/profile"
+                    element={user ? <ProfilePage user={user} setUser={setUser} /> : <Navigate to="/login" /> }
                 />
                 <Route path="/" element={<Navigate to="/login" />} />
                 <Route path="/register" element={<RegisterPage />} />

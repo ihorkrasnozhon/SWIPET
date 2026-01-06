@@ -7,6 +7,11 @@ import AddPetModal from "../../features/Modals/AddPet/AddPetModal.jsx";
 function SwipesPage({ setUser }) {
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [refreshSignal, setRefreshSignal] = useState(0);
+
+    const handlePetAdded = () => {
+        setRefreshSignal(prev => prev + 1);
+    }
 
     return (
         <div className="swipes-page">
@@ -19,12 +24,13 @@ function SwipesPage({ setUser }) {
             </header>
 
             <main className="swipes-page__content">
-                <CardStack/>
+                <CardStack key={refreshSignal}/>
             </main>
 
             <AddPetModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
+                onPetAdded = {handlePetAdded}
             />
         </div>
     );

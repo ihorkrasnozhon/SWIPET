@@ -59,6 +59,38 @@ app.get('/api/pets', (req, res) => {
     });
 });
 
+app.get('/api/my-pets', (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.status(401).json({message: "Unauthorized"});
+    }
+
+    const userId = req.session.user.id;
+
+    const sql = "SELECT * FROM pets WHERE owner_id = ? ORDER BY id DESC";
+
+    db.all(sql, [userId], (err, rows) => {
+        if(err) {
+            console.error("Error occused while getting pets:", err.message);
+            return res.status(500).json({error: "Internal database error"});
+        }
+
+        res.json(rows);
+    });
+});
+
+app.delete('/api/pets/:id', (req, res) => {
+    if (!req.session.user) return res.status(401).send();
+
+    const petId = req.params.id;
+    const userId = req.session.user.id;
+
+    db.run("DELETE FROM pets WHERE id = ? AND owner_id = ?", [petId, userId], function(err) {
+        if (err) return res.status(500).json({message: "Internal server error", error: err.message});
+        if (this.changes === 0) return res.status(403).json({message: "You dont have acces to do that"});
+        res.json({message: "Deleted successfully"});
+    });
+});
+
 app.get('/api/islogged', (req, res) => {
     if (req.session.user) {
         res.json({

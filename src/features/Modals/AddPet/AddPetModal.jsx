@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {motion,  AnimatePresence} from 'framer-motion';
 import "./AddPetModal.css";
 
-const AddPetModal = ({isOpen, onClose}) => {
+const AddPetModal = ({isOpen, onClose, onPetAdded}) => {
     const [formData, setFormData] = useState({name: '', age: '', bio: '', image: ''});
 
     const handeSubmit = async (e) => {
@@ -16,6 +16,7 @@ const AddPetModal = ({isOpen, onClose}) => {
 
         if(response.ok) {
             alert("Pet succesfully added!");
+            onPetAdded();
             onClose();
         }
     };

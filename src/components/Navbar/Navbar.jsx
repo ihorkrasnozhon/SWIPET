@@ -25,7 +25,7 @@ const Navbar = ({ setUser, onAddPet, navigate }) => {
             <motion.div
                 className="nav-logo-button"
                 whileTap={{scale: 0.9}}
-                onClick={() => window.location.reload()}
+                onClick={() => navigate('/swipes')}
             >
                 <img src="/swipet-logo.png" alt="Swipet Logo" className="swipet-logo-img"/>
             </motion.div>
@@ -40,13 +40,21 @@ const Navbar = ({ setUser, onAddPet, navigate }) => {
                     ➕ Post
                 </motion.button>
 
+                <motion.button
+                    className="nav-profile-btn"
+                    whileTap={{scale: 0.9}}
+                    onClick={() => navigate('/profile')}
+                >
+                    👤 Profile
+                </motion.button>
+
                 {/*TODO dont use this button as logout*/}
                 <motion.button
                     className="nav-profile-btn"
                     whileTap={{scale: 0.9}}
                     onClick={handleLogout}
                 >
-                    👤(LOGOUT)
+                    🚪(LOGOUT)
                 </motion.button>
             </div>
 
